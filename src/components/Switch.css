@@ -1,0 +1,7 @@
+label {
+    grid-column: 1;
+}
+
+.button-container {
+    grid-column: 2;
+}
