@@ -10,7 +10,7 @@ function PreferencesPanel() {
         'label': 'Color scheme',
         'options': {
           'Dark': 'dark',
-          'Match system': null,
+          'Match system': 'default',
           'Light': 'light'
         }
       },
@@ -19,7 +19,7 @@ function PreferencesPanel() {
         'label': 'Contrast',
         'options': {
           'More': 'more',
-          'Normal': null,
+          'Normal': 'default',
           'Less': 'less'
         }
       }
@@ -28,45 +28,32 @@ function PreferencesPanel() {
 
   const [panelVisible, setPanelVisible] = React.useState(false);
   const [activeSettings, setActiveSettings] = React.useState(() => {
-    const storagePreferences = window.localStorage.getItem("displayPreferences");
-
-    if (storagePreferences){
-      const parsedPreferences = JSON.parse(storagePreferences);
-      for (const [, value] of Object.entries(parsedPreferences)) { /* eslint-disable-line no-unused-vars */
-        if(value){
-          document.documentElement.classList.add(String(value));
-        }
-      }
-      return Object(parsedPreferences);
-    }
-
-    const settings: { [key: string]: string | null } = {};
+    const currentSettings: { [key: string]: string } = {};
     options.settings.forEach((setting) => {
-      settings[setting.key] = null;
-    });
-    return settings;
+      currentSettings[setting.key] = window.localStorage.getItem("display-override-" + setting.key) || "default";
+      document.documentElement.setAttribute('data-override-' + setting.key, currentSettings[setting.key]);
+    })
+
+    return currentSettings;
   })
 
   React.useEffect(() => {
-    window.localStorage.setItem("displayPreferences", JSON.stringify(activeSettings));
+    for(const [key, value] of Object.entries(activeSettings)) {
+      window.localStorage.setItem("display-override-" + key, String(value));
+    }
   }, [activeSettings])
 
   function togglePanel() {
     setPanelVisible(!panelVisible);
   }
 
-  function setActiveSetting(group: string, value: string | null) {
+  function setActiveSetting(group: string, value: string) {
     setActiveSettings({...(Object(activeSettings)), [group]: value});
   }
 
-  function addClassToBody(group: string, classToAdd: string | null, classesToRemove: string[]) {
-    if(activeSettings[group]){
-      document.documentElement.classList.remove(String(activeSettings[group]));
-    }
+  function addClassToBody(group: string, classToAdd: string, classesToRemove?: string[]) {
+    document.documentElement.setAttribute('data-override-' + group, classToAdd);
     setActiveSetting(group, classToAdd);
-    if (classToAdd) {
-      document.documentElement.classList.add(classToAdd);
-    }
   }
 
   function switches() {
