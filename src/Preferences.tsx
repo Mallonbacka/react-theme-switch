@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { KeyboardEvent } from 'react';
+import FocusTrap from 'focus-trap-react';
 
 import Switch from './components/Switch';
 
@@ -43,6 +44,12 @@ function PreferencesPanel() {
     }
   }, [activeSettings])
 
+  function handleKey(event: KeyboardEvent) {
+    if (event.key === 'Escape' && panelVisible) {
+      setPanelVisible(false);
+    }
+  }
+
   function togglePanel() {
     setPanelVisible(!panelVisible);
   }
@@ -63,12 +70,16 @@ function PreferencesPanel() {
   }
 
   return (
-    <>
-      <button onClick={togglePanel} aria-expanded={panelVisible} aria-controls='preferences-panel' className='preferences-toggle-button'>Page options <span className="caret" aria-hidden={true}></span></button>
-      {panelVisible && <div className='switch-container' id='preferences-panel'>
-        { switches() }
-      </div> }
-    </>
+    <FocusTrap active={panelVisible}>
+      <div onKeyDown={handleKey}>
+        <button onClick={togglePanel} aria-expanded={panelVisible} aria-controls='preferences-panel' className='preferences-toggle-button'>Page options <span className="caret" aria-hidden={true}></span></button>
+        {panelVisible && <div className='switch-container' id='preferences-panel'>
+            { switches() }
+            <button onClick={togglePanel} className='preferences-close-button'>Close</button>
+          </div>
+        }
+      </div>
+    </FocusTrap>
   );
 }
 
