@@ -76,10 +76,10 @@ function PreferencesPanel() {
   return (
     <FocusTrap active={panelVisible}>
       <div onKeyDown={handleKey}>
-        <button onClick={togglePanel} aria-expanded={panelVisible} aria-controls={ariaControlsValue()} className='preferences-toggle-button'>Page options <span className="caret" aria-hidden={true}></span></button>
+        <button onClick={togglePanel} aria-expanded={panelVisible} aria-controls={ariaControlsValue()} className='preferences-toggle-button' type='button'>Page options <span className="caret" aria-hidden={true}></span></button>
         {panelVisible && <div className='switch-container' id='preferences-panel'>
             { switches() }
-            <button onClick={togglePanel} className='preferences-close-button'>Close</button>
+            <button onClick={togglePanel} className='preferences-close-button' type='button'>Close</button>
           </div>
         }
       </div>
